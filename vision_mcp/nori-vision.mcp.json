@@ -1,0 +1,12 @@
+{
+  "mcpServers": [
+    {
+      "name": "nori-vision",
+      "enabled": true,
+      "transport": "streamable_http",
+      "url": "http://127.0.0.1:47833/mcp",
+      "command": "",
+      "args": []
+    }
+  ]
+}

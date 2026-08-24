@@ -1,0 +1,7 @@
+{
+  "api_key": "VOLC_ARK_API_KEY 或直接填火山方舟 API Key",
+  "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+  "model": "doubao-seed-2-1-pro-260628",
+  "port": 47833,
+  "timeout": 120
+}

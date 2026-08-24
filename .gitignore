@@ -1,0 +1,23 @@
+# 敏感/本地文件，分发时不应包含
+vision_mcp/config.json
+.env
+.mcp.json
+.cursor/
+data/settings_overrides.json
+data/logs/
+data/chat_media/
+data/memory.db
+data/heart.json
+data/heart.pid
+data/gpt_sovits.pid
+data/inori_probe/
+data/inori_voice/
+data/voices/
+
+# Python 缓存/虚拟环境
+__pycache__/
+*.py[cod]
+.venv/
+
+# 内置预编译原生宿主（仅随 Release 压缩包分发，不入 Git）
+vendor/

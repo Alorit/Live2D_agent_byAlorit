@@ -1,0 +1,187 @@
+# ============================================================
+# Nori AI 桌面宠物 配置文件
+# 所有路径都可以写成相对项目根目录的相对路径
+# ============================================================
+
+llm:
+  # LLM API Key：本地由 data/settings_overrides.json 或环境变量 DEEPSEEK_API_KEY 提供；
+  # config.yaml 不保存真实 Key，避免分发泄露
+  api_key: ""
+  # OpenAI 兼容 Base URL：
+  # - DeepSeek: https://api.deepseek.com
+  # - OpenAI:   https://api.openai.com/v1
+  # - Ollama:   http://127.0.0.1:11434/v1
+  # - 其它本地/网关: 自定义地址
+  base_url: "https://api.deepseek.com"
+  # 模型名：DeepSeek 用 deepseek-v4-flash；Ollama 用 qwen2.5:7b 等
+  model: "deepseek-v4-flash"
+  temperature: 1.0
+  max_tokens: 300
+  # 工作记忆窗口：给 LLM 看最近多少条消息
+  working_memory_size: 30
+  # LLM 上下文压缩（成熟做法：保留最近窗口原文，更早对话压缩成摘要）
+  context_compression:
+    mode: "auto"          # off = 不压缩；on = 超过窗口即压缩；auto = 按长度智能压缩
+    window_size: 20       # 保留最近多少条消息原文
+    max_chars: 300        # 压缩摘要最大字符数
+
+search:
+  # 百度智能云 AI 搜索（每天免费额度，未开通按量计费时自动走免费额度）
+  enabled: true
+  provider: "baidu"
+  # 本地 Key 由 data/settings_overrides.json 提供；config.yaml 不保存真实 Key
+  api_key: ""
+  top_k: 4
+  timeout: 120
+
+# 视觉能力已独立为 MCP 服务器（vision_mcp/）：
+# - 不在此处保存任何视觉 API Key，避免分发泄露
+# - 请先启动 vision_mcp/server.py
+# - 然后在 GUI 设置 → MCP/Skills → 导入 MCP JSON，选择 vision_mcp/nori-vision.mcp.json
+# - 视觉服务器配置：vision_mcp/config.json 或环境变量 VOLC_ARK_API_KEY
+
+persona:
+  # 多人格：每个 persona/*.md 是一个人设，可在 GUI“人格”页新建/切换/导入/删除。
+  # 当前生效人格记录在 data/persona_active.json。
+  persona_dir: "persona"
+  active_persona: "nori"
+
+  # 允许使用的表情标签（LLM 只会从这些里选）
+  expressions: ["开心", "难过", "惊讶", "害羞", "生气", "认真", "困惑"]
+  # 允许使用的动作标签
+  motions: ["点头", "摇头", "挥手", "鞠躬", "发呆"]
+
+  # 表情/动作标签的技术映射（不再作为 System Prompt 注入；人格完全由 .md 决定）
+  # 逻辑表情名 -> Live2D 模型真实表情名 的映射（按你的模型实际 expression 名填）
+  # 注意：Nori 这个模型的 .exp3.json 是 配件/特殊眼睛 类表情，不是标准喜怒哀乐，
+  # 下面是“最接近”的映射，你可以按自己喜好换成：jk包 / 圈圈眼 / 戴帽子 / 手柄 / 爱心眼 / 脱外套 / 裙子 / 马尾L隐藏 / 马尾R隐藏 / 黑化
+  emotion_map:
+    开心: "爱心眼"
+    难过: "圈圈眼"
+    惊讶: "圈圈眼"
+    害羞: "爱心眼"
+    生气: "黑化"
+    认真: "戴帽子"
+    困惑: "圈圈眼"
+
+  # 逻辑动作名 -> Live2D 模型真实动作名 的映射
+  # Nori 模型没有 .motion3.json 动作文件，动作标签会被安全忽略（不会报错）
+  motion_map:
+    点头: "nod"
+    摇头: "shake"
+    挥手: "wave"
+    鞠躬: "bow"
+    发呆: "idle"
+
+live2d:
+  # 是否启用 Live2D（false 则只显示聊天窗口）
+  enabled: true
+  # 控制方式：native = 使用 Nori-Desktop-Pet 原生 Avalonia/OpenGL 桌宠（当前模式）
+  # 旧的 mcp / model_path 方案已移除，仅保留 native 控制方式
+  controller: "native"
+  # 原生 Live2D 应用可执行文件路径（项目内已内置自包含预编译宿主，无需额外 .NET 运行时）
+  native_app_path: "vendor/nori_desktop_pet/Nori.Desktop.exe"
+  # 使用 .exe 时无需 dotnet；保留字段以便将来切换 .dll 模式
+  native_dotnet_path: ""
+  # 整体缩放倍率：1.0 = 基准大小；2.0 = 窗口和模型都放大一倍。
+  # 操作面板滑条范围 0.5x ~ 2.0x，原生侧限制 0.1x ~ 2.0x
+  scale: 1.0
+  # 是否在模型未加载成功时自动退回内置简单宠物
+  fallback_on_error: true
+  # 窗口背景透明（QWebEngineView 在部分 Windows 显卡上透明可能失败，失败会自动改回纯色）
+  transparent: true
+  # 若透明失败使用的背景色 (R,G,B)
+  bg_color: [245, 245, 245]
+  # 语音气泡显示时间：最短/最长秒数（按文本长度自动调整）
+  bubble_min_sec: 3
+  bubble_max_sec: 12
+
+tts:
+  # 只保留 Nori 音色：GPT-SoVITS 使用 Nori 语音微调权重。
+  # 权重位于 data/voices/nori/，由 GPT_SoVITS/configs/tts_infer.yaml 加载；
+  # GUI 启动时自动拉起 API，冷启动期间消息排队，API 就绪后自动朗读。
+  backend: "gpt_sovits"
+  order: ["gpt_sovits"]
+
+  # GPT-SoVITS（Nori 微调模型，中英日都行，GUI 会静默启动并显示日志）
+  gpt_sovits:
+    api_url: "http://127.0.0.1:9880"
+    # 合成文本语言：auto / zh / en / ja ...
+    text_lang: "auto"
+    # 参考音频（音色克隆参考）：Nori 干净单句样本
+    ref_audio_path: "D:\\Nori_Live2D_Agent\\data\\inori_voice\\nori_ref.wav"
+    # 参考音频对应的文字（已从游戏聊天记录确认）
+    prompt_text: "Nori 是最擅长玩游戏、最喜欢你陪伴的小人偶 AI！"
+    prompt_lang: "zh"
+    speed: 1.0
+    # GUI 启动时是否自动（无窗口）拉起 GPT-SoVITS API
+    auto_start: true
+    # GPT-SoVITS 安装目录（内含 runtime/pythonw.exe 与 api_v2.py）
+    runtime_dir: "D:/GPT-SoVITS-v2pro-20250604-nvidia50"
+
+memory:
+  # 检索后端：auto = 优先向量（如果已安装 sentence-transformers），否则 BM25
+  # 可选：bm25（纯本地，无需下载模型）、vector（需要 pip install sentence-transformers）
+  backend: "auto"
+  # 向量模型（只有 vector 后端使用），中文推荐 bge-small-zh-v1.5，英文/多语可换 bge-m3
+  vector_model: "BAAI/bge-small-zh-v1.5"
+  # 每轮注入系统提示的长期记忆条数
+  top_k: 8
+  # 每隔多少轮用户对话触发一次后台反思整合（提取事实/规则/摘要）
+  consolidate_interval: 10
+  # 记忆库最大条数，超过后会遗忘低重要度的旧记忆
+  max_memories: 5000
+  # 重要性阈值：低于此值的纯闲聊不进入长期记忆
+  importance_threshold: 0.15
+  # 长期记忆保存的交换（一轮用户+AI）最小字数
+  min_exchange_chars: 8
+  # 定时记忆回顾：自动做 LLM 总结，并把高度相似的记忆合并为一条
+  auto_review_enabled: true
+  auto_review_minutes: 30
+  similarity_threshold: 0.85
+
+gui:
+  # 启动时是否显示聊天窗口
+  show_chat_on_start: true
+  # 是否置顶宠物窗口（也可在面板里实时切换）
+  pet_always_on_top: true
+  # 界面字体大小（非聊天气泡部分；可在 设置→基础设置 里调整）
+  font_size: 13
+  # 聊天气泡字体大小（与界面字体分开设置）
+  chat_font_size: 15
+  # 用户昵称（聊天记录中显示；可在 设置→基础设置 修改）
+  user_name: "Alorit"
+  # 智能体显示名兜底（各人格可在 设置→基础设置 分别修改，Nori 为默认）
+  agent_name: "Nori"
+  # 自定义头像（空 = 默认 emoji；可在 设置→基础设置 里选择图片）
+  user_avatar: ""
+  # 聊天窗口初始大小（面板含 聊天/记忆/人格/控制台/设置 页签）
+  chat_width: 760
+  chat_height: 820
+  # 启动问候（不需要 LLM，本地直接播放）
+  greeting: "你好呀，我是 Nori！先填好 API Key 我们就可以聊天啦。"
+
+heart:
+  # “心脏”：独立进程，定时检查 AI 自己设定的下次醒来时间并唤醒一轮私人思考
+  enabled: true
+  # 关闭 GUI 时是否同时停止 heart（false = heart 继续在后台自主运行）
+  stop_with_gui: false
+  # 轮询间隔（秒）
+  poll_interval_sec: 20
+  # 初始/兜底的醒来间隔（分钟）
+  default_wake_minutes: 15
+  # AI 可设置的最短/最长醒来间隔（分钟）
+  min_wake_minutes: 2
+  max_wake_minutes: 120
+  # 主人最近发言多久内保持安静，避免抢话（秒）
+  chat_quiet_sec: 90
+  # 允许 heart 自主说话（Live2D + TTS）
+  allow_speak: true
+  # 状态文件
+  state_file: "data/heart.json"
+
+advanced:
+  # 是否在启动时自动下载缺失的 TTS 模型（需要能访问 GitHub/HuggingFace）
+  auto_download_tts: false
+  # 日志文件（GUI“控制台”页会合并显示 data/logs/*.log）
+  log_file: "data/logs/agent.log"
