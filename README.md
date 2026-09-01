@@ -1,5 +1,7 @@
 # Nori_Live2D_Chat v0.2.0
 
+(怎么这东西真有人用啊Σ( ° △ °|||)︴)
+
 一个由 **Alorit 与 AI/Agent 协作完成** 的 Windows 桌面 AI 宠物 / 陪伴助手项目（Nori AI 桌面宠物）。
 
 ![展示图](docs/preview.png)
